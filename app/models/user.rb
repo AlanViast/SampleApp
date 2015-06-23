@@ -9,15 +9,17 @@ class User < ActiveRecord::Base
   validates :password, length: { minimum: 6 }
   has_secure_password # use secure password
 
-  # 返回指定的哈系数据摘要
-  def User.digest(string)
-    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
-    return BCrypt::Password.create(string, cost: cost)
-  end
+  class << self
+    # 返回指定的哈系数据摘要
+    def digest(string)
+      cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
+      return BCrypt::Password.create(string, cost: cost)
+    end
 
-  # 创建一个随机令牌
-  def User.new_token
-    return SecureRandom.urlsafe_base64
+    # 创建一个随机令牌
+    def new_token
+      return SecureRandom.urlsafe_base64
+    end
   end
 
   # 为了持久会话,  在数据库中记住用户
