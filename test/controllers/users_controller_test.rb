@@ -4,6 +4,7 @@ class UsersControllerTest < ActionController::TestCase
 
   def setup
     @user = users(:michael)
+    @other_user = users(:archer)
   end
 
   test "should get new" do
@@ -19,6 +20,23 @@ class UsersControllerTest < ActionController::TestCase
 
   test 'should redirect update when not logged in' do
     patch :update, id: @user, user: { name: @user.name, email: @user.email}
+    assert_redirected_to login_url
+  end
+
+  test 'should redirect edit with logged in as wrong user' do
+    log_in_as(@other_user)
+    get :edit, id: @user
+    assert_redirected_to root_url
+  end
+
+  test 'should redirect update with loggin in as wrong user' do
+    log_in_as(@other_user)
+    get :update, id: @user, user: { name: @user.name, email: @user.email }
+    assert_redirected_to root_url
+  end
+
+  test 'should redirect index when not logged in' do
+    get :index
     assert_redirected_to login_url
   end
 
