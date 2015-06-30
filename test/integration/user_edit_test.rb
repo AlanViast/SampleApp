@@ -4,6 +4,7 @@ class UserEditTest < ActionDispatch::IntegrationTest
 
   def setup
     @user = users(:michael)
+    @other_user = users(:archer)
   end
 
   test 'unsuccessful edit ' do
@@ -40,6 +41,19 @@ class UserEditTest < ActionDispatch::IntegrationTest
     @user.reload
     assert_equal @user.name, name
     assert_equal @user.email, email
+  end
+
+  test 'should edit user admin' do
+    get edit_user_path(@other_user)
+    log_in_as(@other_user)
+    assert_redirected_to edit_user_path(@other_user)
+    name = "Foobar"
+    email = "foobar@exmaple.com"
+    patch user_path(@other_user), user: { name: name, email: email, password: "foobar", password_confirmation: "foobar", admin: 1}
+    assert_not flash.empty?
+    assert_redirected_to @other_user
+    @other_user.reload
+    assert_not @other_user.admin?
   end
 
 end
