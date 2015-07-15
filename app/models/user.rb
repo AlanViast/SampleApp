@@ -29,14 +29,17 @@ class User < ActiveRecord::Base
     return update_attribute(:remember_digest, User.digest(remember_token))
   end
 
-  def authenticated?(remember_token)
-    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  def authenticated?(attribute, token)
+    digest = send("#{attribute}_digest")
+    return false if digest.nil?
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
   def forget
     return false if self.remember_digest.nil?
     update_attribute(:remember_digest, nil)
   end
+
 
   private
     def downcase_email
