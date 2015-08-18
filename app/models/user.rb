@@ -59,6 +59,9 @@ class User < ActiveRecord::Base
     UserMailer.password_reset(self).deliver_now
   end
 
+  def password_reset_expired?
+   self.reset_sent_at < 3.minute.ago
+  end
 
   private
     def downcase_email
