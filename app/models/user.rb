@@ -41,8 +41,10 @@ class User < ActiveRecord::Base
   end
 
   def activate
-    self.update_attribute(:activated , true)
-    self.update_attribute(:activated_at , Time.zone.now)
+    # self.update_attribute(:activated , true)
+    # self.update_attribute(:activated_at , Time.zone.now)
+
+    self.update_columns(activated: true, activated_at: Time.zone.now)
   end
 
   def send_activation_email
@@ -53,6 +55,7 @@ class User < ActiveRecord::Base
     self.reset_token = User.new_token
     self.update_attribute(:reset_digest, User.digest(self.reset_token))
     self.update_attribute(:reset_sent_at, Time.zone.now)
+    self.update_columns(reset_digest: User.digest(self.reset_token), reset_sent_at: Time.zone.now )
   end
 
   def send_password_reset_email
@@ -60,7 +63,7 @@ class User < ActiveRecord::Base
   end
 
   def password_reset_expired?
-   self.reset_sent_at < 3.minute.ago
+   self.reset_sent_at < 2.hours.ago
   end
 
   private
